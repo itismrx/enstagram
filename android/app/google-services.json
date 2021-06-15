@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "645086358326",
+    "firebase_url": "https://enstagram-aecbc-default-rtdb.firebaseio.com",
+    "project_id": "enstagram-aecbc",
+    "storage_bucket": "enstagram-aecbc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645086358326:android:6c8f6aa9390a83bc99a197",
+        "android_client_info": {
+          "package_name": "com.itismrx.enstagram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "645086358326-q5n6e87hl5qj364njd1gm7g9nv58i98e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.itismrx.enstagram",
+            "certificate_hash": "21031ce77296a2bbfa7adb2f9a8b7f0e1fe65a71"
+          }
+        },
+        {
+          "client_id": "645086358326-uootuiutq8qc0j7cnkb0otai56hfj96t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnmhi8xJuE0rnvWFIaYsiPWVvC6m7Nzek"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "645086358326-uootuiutq8qc0j7cnkb0otai56hfj96t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
