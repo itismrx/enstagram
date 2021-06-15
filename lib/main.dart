@@ -9,8 +9,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'FlutterShare',
+      title: 'Enstagram',
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primaryColor: Colors.lightGreenAccent,
+        accentColor: Colors.lightBlue,
+      ),
       home: Home(),
     );
   }
