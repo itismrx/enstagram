@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0" 
 
 dependencies:
   flutter:
@@ -35,6 +35,7 @@ dependencies:
   firebase_auth: ^1.4.1
   google_sign_in: ^5.0.4 
   geolocator: ^7.1.0 
+  # geocoder: ^0.2.1
   uuid: ^3.0.4
   image: ^3.0.2
   animator: ^3.1.0
@@ -85,6 +86,7 @@ flutter:
     - assets/images/search.svg
     - assets/images/activity_feed.svg
     - assets/images/no_content.svg
+    - assets/images/search-not-found.png
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

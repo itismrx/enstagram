@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:enstagram/widgets/header.dart';
@@ -15,6 +17,6 @@ class _TimelineState extends State<Timeline> {
   Widget build(context) {
     return Scaffold(
         appBar: header(context, titleText: 'Enstagram'),
-        body: linearProgress(context));
+        body: Text('Timeline'));
   }
 }

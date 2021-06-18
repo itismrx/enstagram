@@ -1,15 +1,31 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enstagram/models/user.dart';
 import 'package:enstagram/pages/activity_feed.dart';
+import 'package:enstagram/pages/create_account.dart';
 import 'package:enstagram/pages/profile.dart';
 import 'package:enstagram/pages/search.dart';
 import 'package:enstagram/pages/timeline.dart';
 import 'package:enstagram/pages/upload.dart';
-import 'package:enstagram/widgets/header.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 final googleSignIn = GoogleSignIn();
+final usersRef = FirebaseFirestore.instance.collection('users');
+final postRef = FirebaseFirestore.instance.collection('post');
+final storageRef = FirebaseStorage.instance.ref();
+
+DateTime timestamp = DateTime.now();
+User currentUser = User(
+  id: '',
+  username: "",
+  photUrl: "",
+  email: "",
+  displayName: "",
+  bio: "",
+);
 
 class Home extends StatefulWidget {
   @override
@@ -18,14 +34,18 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool isAuth = false;
-  PageController pageController;
+  PageController pageController = PageController();
   int pageIndex = 0;
 
-  @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    pageController = PageController();
+
+    Firebase.initializeApp().whenComplete(() {
+      setState(() {});
+    });
+
+    FirebaseFirestore.instance.settings = Settings(persistenceEnabled: false);
+
     googleSignIn.onCurrentUserChanged.listen((account) {
       handleSignIn(account);
     }, onError: (err) {
@@ -46,10 +66,10 @@ class _HomeState extends State<Home> {
         );
   }
 
-  void handleSignIn(GoogleSignInAccount account) {
+  void handleSignIn(GoogleSignInAccount? account) {
     if (account != null) {
+      createUserInFirestore();
       setState(() {
-        print('User logged in $account');
         isAuth = true;
       });
     } else {
@@ -57,6 +77,29 @@ class _HomeState extends State<Home> {
         isAuth = false;
       });
     }
+  }
+
+  void createUserInFirestore() async {
+    final GoogleSignInAccount? user = googleSignIn.currentUser;
+    DocumentSnapshot doc = await usersRef.doc(user!.id).get();
+    if (!doc.exists) {
+      final username = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CreateAccount(),
+        ),
+      );
+      usersRef.doc(user.id).set({
+        'id': user.id,
+        'username': username,
+        'photUrl': user.photoUrl,
+        'email': user.email,
+        'displayName': user.displayName,
+        'bio': '',
+        'timestamp': timestamp
+      });
+    }
+    currentUser = User.fromDocument(doc);
   }
 
   void login() {
@@ -87,9 +130,13 @@ class _HomeState extends State<Home> {
         children: [
           Timeline(),
           ActivityFeed(),
-          Upload(),
+          Upload(
+            currentUser: currentUser,
+          ),
           Search(),
-          Profile(),
+          Profile(
+            profileId: currentUser.id,
+          ),
         ],
         controller: pageController,
         onPageChanged: onPageChanged,
@@ -97,7 +144,7 @@ class _HomeState extends State<Home> {
       ),
       bottomNavigationBar: CupertinoTabBar(
         currentIndex: pageIndex,
-        activeColor: Theme.of(context).primaryColor,
+        activeColor: Theme.of(context).accentColor,
         onTap: onTap,
         items: [
           BottomNavigationBarItem(
@@ -124,6 +171,7 @@ class _HomeState extends State<Home> {
   }
 
   Scaffold buildUnAuthScreen() {
+    print(currentUser.username);
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
