@@ -21,6 +21,12 @@ class _SearchState extends State<Search> {
     body = buildNoContent();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _editingController.dispose();
+  }
+
   handleSearch(query) {
     setState(() {
       body = FutureBuilder(

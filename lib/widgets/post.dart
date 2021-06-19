@@ -1,13 +1,26 @@
-import 'package:flutter/material.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:flutter/material.dart';
 
-class Post extends StatefulWidget {
-  @override
-  _PostState createState() => _PostState();
-}
+// class PostTile extends StatefulWidget {
+//   Post post;
+//   Post
+//   @override
+//   _PostTileState createState() => _PostTileState();
+// }
 
-class _PostState extends State<Post> {
-  @override
-  Widget build(BuildContext context) {
-    return Text("Post");
-  }
-}
+// class _PostTileState extends State<PostTile> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       child: Column(
+//         children: [
+//           Row(
+//             children: [
+//               CircleAvatar(backgroundImage: CachedNetworkImageProvider()),
+//             ],
+//           )
+//         ],
+//       ),
+//     );
+//   }
+// }

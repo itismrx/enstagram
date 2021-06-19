@@ -120,7 +120,7 @@ class _HomeState extends State<Home> {
     pageController.animateToPage(
       pageIndex,
       duration: Duration(milliseconds: 300),
-      curve: Curves.easeInOutCirc,
+      curve: Curves.bounceIn,
     );
   }
 
@@ -140,7 +140,7 @@ class _HomeState extends State<Home> {
         ],
         controller: pageController,
         onPageChanged: onPageChanged,
-        physics: NeverScrollableScrollPhysics(),
+        // physics: NeverScrollableScrollPhysics(),
       ),
       bottomNavigationBar: CupertinoTabBar(
         currentIndex: pageIndex,
