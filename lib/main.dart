@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.lightGreenAccent,
         accentColor: Colors.lightBlue,
+        iconTheme: IconThemeData(color: Colors.black45),
       ),
       home: Home(),
     );

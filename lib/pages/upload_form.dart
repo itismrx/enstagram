@@ -8,6 +8,7 @@ import 'package:image/image.dart' as Im;
 import 'package:geolocator/geolocator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
 
 import 'home.dart';
 
@@ -25,6 +26,13 @@ class _UploadFormState extends State<UploadForm> {
   TextEditingController captionController = TextEditingController();
   bool _isUploading = false;
   String postId = Uuid().v4();
+  bool foundFace = false;
+
+  @override
+  void initState() {
+    super.initState();
+    runFaceDetection();
+  }
 
   getRealocation() async {
     bool seriviceEnabled;
@@ -132,7 +140,6 @@ class _UploadFormState extends State<UploadForm> {
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: Theme.of(context).primaryColor,
         content: Text(
           'Post Uploaded Successfully',
           style: TextStyle(color: Colors.black),
@@ -180,6 +187,23 @@ class _UploadFormState extends State<UploadForm> {
         ],
       ),
     );
+  }
+
+  runFaceDetection() async {
+    final inputImage = InputImage.fromFile(widget.file);
+    final faceDetector = GoogleMlKit.vision.faceDetector();
+    List<Face> faces = await faceDetector.processImage(inputImage);
+    if (faces.isNotEmpty) {
+      setState(() {
+        foundFace = true;
+        print('--------------found face true-------------');
+      });
+    } else {
+      setState(() {
+        print('--------------found face false-------------');
+        foundFace = false;
+      });
+    }
   }
 
   @override
@@ -271,6 +295,7 @@ class _UploadFormState extends State<UploadForm> {
                   ),
                 ),
               ),
+              Text('Found Face $foundFace'),
             ],
           ),
         ),

@@ -8,30 +8,35 @@ class Post {
   final String mediaUrl;
   final String description;
   final dynamic likes;
+  final DateTime timestamp;
 
-  Post({
-    required this.postId,
-    required this.ownerId,
-    required this.username,
-    required this.location,
-    required this.mediaUrl,
-    required this.description,
-    required this.likes,
-  });
+  Post(
+      {required this.postId,
+      required this.ownerId,
+      required this.username,
+      required this.location,
+      required this.mediaUrl,
+      required this.description,
+      required this.likes,
+      required this.timestamp});
   static CollectionReference getPostRef() {
     return FirebaseFirestore.instance.collection('post');
   }
 
   factory Post.fromDocument(DocumentSnapshot doc) {
+    Timestamp time = doc['timestamp'];
+
     return Post(
-      postId: doc['postId'],
-      ownerId: doc['ownerId'],
-      username: doc['username'],
-      location: doc['location'],
-      mediaUrl: doc['mediaUrl'],
-      description: doc['description'],
-      likes: doc['likes'],
-    );
+        postId: doc['postId'],
+        ownerId: doc['ownerId'],
+        username: doc['username'],
+        location: doc['location'],
+        mediaUrl: doc['mediaUrl'],
+        description: doc['description'],
+        likes: doc['likes'],
+        timestamp: time
+            .toDate() //DateTime.fromMicrosecondsSinceEpoch(time.microsecondsSinceEpoch)
+        );
   }
 
   static Future<List<Post>> getUserPosts(ownerId) async {

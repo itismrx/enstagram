@@ -18,6 +18,13 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  int postCount = 0;
+  List<Post> _posts = [];
+  @override
+  void initState() {
+    super.initState();
+  }
+
   buildProfileHeader() {
     return FutureBuilder(
         future: usersRef.doc(widget.profileId).get(),
@@ -39,7 +46,7 @@ class _ProfileState extends State<Profile> {
             final data = snapshot.data!.data() as Map<String, dynamic>;
             User user = User.fromOther(data);
             value = Padding(
-              padding: const EdgeInsets.only(top: 18.0),
+              padding: const EdgeInsets.only(top: 26.0),
               child: Column(
                 children: [
                   Row(
@@ -99,7 +106,7 @@ class _ProfileState extends State<Profile> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      buildCountColumn('posts', 0),
+                      buildCountColumn('posts', postCount),
                       buildCountColumn('followers', 0),
                       buildCountColumn('following', 0),
                     ],
@@ -215,9 +222,11 @@ class _ProfileState extends State<Profile> {
         }
         if (posts.connectionState == ConnectionState.done) {
           List<PostTile> postTiles = [];
+          postCount = posts.data!.length;
           posts.data!.forEach((post) {
             postTiles.add(PostTile(post));
           });
+
           response = ListView(
             shrinkWrap: true,
             physics: ClampingScrollPhysics(),
