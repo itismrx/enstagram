@@ -2,23 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 circularProgress(context) {
-  // return Container(
-  //   alignment: Alignment.center,
-  //   padding: EdgeInsets.only(top: 10),
-  //   child:
-  //   CircularProgressIndicator(
-  //     valueColor: AlwaysStoppedAnimation(
-  //       Theme.of(context).accentColor,
-  //     ),
-  //   ),
-  // );
-  return SleekCircularSlider(
-      appearance: CircularSliderAppearance(
-    customColors:
-        CustomSliderColors(progressBarColor: Theme.of(context).accentColor),
-    customWidths: CustomSliderWidths(progressBarWidth: 5),
-    spinnerMode: true,
-  ));
+  return Container(
+    alignment: Alignment.center,
+    padding: EdgeInsets.only(top: 10),
+    child: CircularProgressIndicator(
+      valueColor: AlwaysStoppedAnimation(
+        Theme.of(context).accentColor,
+      ),
+    ),
+  );
+  // return SleekCircularSlider(
+  //     appearance: CircularSliderAppearance(
+  //   customColors:
+  //       CustomSliderColors(progressBarColor: Theme.of(context).accentColor),
+  //   customWidths: CustomSliderWidths(progressBarWidth: 5),
+  //   spinnerMode: true,
+  // ));
 }
 
 linearProgress(context) {

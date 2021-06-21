@@ -1,3 +1,4 @@
+import 'package:enstagram/pages/onbording_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import './pages/home.dart';
@@ -16,11 +17,11 @@ class MyApp extends StatelessWidget {
       title: 'Enstagram',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Colors.lightGreenAccent,
-        accentColor: Colors.lightBlue,
+        primaryColor: Colors.lightBlue,
+        accentColor: Colors.lime,
         iconTheme: IconThemeData(color: Colors.black45),
       ),
-      home: Home(),
+      home: OnBordingScreen(),
     );
   }
 }

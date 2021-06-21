@@ -7,6 +7,7 @@ import 'package:enstagram/pages/home.dart';
 import 'package:enstagram/widgets/post_tile.dart';
 import 'package:enstagram/widgets/progress.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 class Profile extends StatefulWidget {
@@ -20,9 +21,24 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   int postCount = 0;
   List<Post> _posts = [];
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
+    getProfilePosts();
+  }
+
+  getProfilePosts() async {
+    setState(() {
+      isLoading = true;
+    });
+    final posts = await Post.getUserPosts(currentUser.id);
+    setState(() {
+      _posts = posts;
+      isLoading = false;
+      postCount = _posts.length;
+    });
   }
 
   buildProfileHeader() {
@@ -31,93 +47,115 @@ class _ProfileState extends State<Profile> {
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           Widget value = Container();
           if (!snapshot.hasData) {
-            value = circularProgress(context);
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            value = circularProgress(context);
+            // value = circularProgress(context);
+            value = buildProfileHeaderTile(currentUser, true);
           }
           if (snapshot.hasError) {
-            value = Text('Error Happend');
-            return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [Container(child: Center(child: value))]);
+            value = value = buildProfileHeaderTile(currentUser, true);
           }
           if (snapshot.connectionState == ConnectionState.done) {
             final data = snapshot.data!.data() as Map<String, dynamic>;
             User user = User.fromOther(data);
-            value = Padding(
-              padding: const EdgeInsets.only(top: 26.0),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CircleAvatar(
-                        backgroundImage:
-                            CachedNetworkImageProvider(user.photUrl),
-                        radius: 50,
-                      ),
-                      buildProfileButton(),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          '${user.displayName}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                      // buildProfileButton(),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    // padding: EdgeInsets.only(top: 4),
-                    child: Text(
-                      '@${user.username}',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.only(bottom: 10),
-                    child: Text(
-                      '${user.bio}',
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      buildCountColumn('posts', postCount),
-                      buildCountColumn('followers', 0),
-                      buildCountColumn('following', 0),
-                    ],
-                  ),
-                  Divider()
-                ],
-              ),
-            );
+            value = buildProfileHeaderTile(user, false);
           }
           return value;
         });
+  }
+
+  Padding buildProfileHeaderTile(User user, bool isNotLoaded) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 26.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          isNotLoaded
+              ? CircleAvatar(
+                  radius: 50,
+                  backgroundColor: Colors.grey,
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: CachedNetworkImageProvider(user.photUrl),
+                      radius: 50,
+                    ),
+                    buildProfileButton(),
+                  ],
+                ),
+          SizedBox(
+            height: 15,
+          ),
+          isNotLoaded
+              ? Container(
+                  color: Colors.grey,
+                  width: 150,
+                  height: 15,
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '${user.displayName}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                    // buildProfileButton(),
+                  ],
+                ),
+          SizedBox(
+            height: 15,
+          ),
+          isNotLoaded
+              ? Container(
+                  color: Colors.grey,
+                  width: 70,
+                  height: 15,
+                )
+              : Container(
+                  alignment: Alignment.centerLeft,
+                  // padding: EdgeInsets.only(top: 4),
+                  child: Text(
+                    '@${user.username}',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+          SizedBox(
+            height: 15,
+          ),
+          isNotLoaded
+              ? Container(
+                  color: Colors.grey,
+                  width: 150,
+                  height: 15,
+                )
+              : Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.only(bottom: 10),
+                  child: Text(
+                    '${user.bio}',
+                  ),
+                ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              buildCountColumn('posts', isNotLoaded ? 0 : postCount),
+              buildCountColumn('followers', 0),
+              buildCountColumn('following', 0),
+            ],
+          ),
+          Divider()
+        ],
+      ),
+    );
   }
 
   handleFollower() {}
@@ -201,41 +239,47 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget buildPost() {
-    return FutureBuilder(
-      future: Post.getUserPosts(currentUser.id),
-      builder: (context, AsyncSnapshot<List<Post>> posts) {
-        Widget response = Container();
-        if (posts.hasError) {
-          response = Center(
-            child: Text('error'),
-          );
-        }
-        if (posts.connectionState == ConnectionState.waiting) {
-          SleekCircularSlider(
-            appearance: CircularSliderAppearance(
-                customWidths: CustomSliderWidths(progressBarWidth: 10)),
-            min: 10,
-            max: 28,
-            initialValue: 14,
-          );
-        }
-        if (posts.connectionState == ConnectionState.done) {
-          List<PostTile> postTiles = [];
-          postCount = posts.data!.length;
-          posts.data!.forEach((post) {
-            postTiles.add(PostTile(post));
-          });
+  buildPost() {
+    if (isLoading) {
+      return circularProgress(context);
+    } else if (_posts.isNotEmpty) {
+      List<PostTile> postTiles = [];
+      _posts.forEach((post) {
+        postTiles.add(PostTile(post));
+      });
 
-          response = ListView(
-            shrinkWrap: true,
-            physics: ClampingScrollPhysics(),
-            children: postTiles,
-          );
-        }
-        return response;
-      },
-    );
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: ClampingScrollPhysics(),
+        itemBuilder: (context, idx) {
+          return postTiles[idx];
+        },
+        itemCount: postTiles.length,
+      );
+    } else {
+      return Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              'assets/images/no_content.svg',
+              height: 260,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Text(
+                'No Posts',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -246,7 +290,10 @@ class _ProfileState extends State<Profile> {
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
-            children: [buildProfileHeader(), buildPost()],
+            children: [
+              buildProfileHeader(),
+              buildPost(),
+            ],
           ),
         ),
       ),

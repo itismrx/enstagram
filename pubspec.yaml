@@ -45,7 +45,7 @@ dependencies:
   cached_network_image: ^3.0.0
   flutter_svg:
   sleek_circular_slider: ^2.0.0
-  google_ml_kit: ^0.6.0
+  introduction_screen: ^2.1.0
   intl: ^0.17.0
   
 
@@ -85,6 +85,7 @@ flutter:
       fonts:
         - asset: assets/fonts/Signatra.ttf
   assets:
+    - assets/images/onbording/
     - assets/images/google_signin_button.png
     - assets/images/upload.svg
     - assets/images/search.svg

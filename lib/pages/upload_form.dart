@@ -8,7 +8,6 @@ import 'package:image/image.dart' as Im;
 import 'package:geolocator/geolocator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 
 import 'home.dart';
 
@@ -31,7 +30,6 @@ class _UploadFormState extends State<UploadForm> {
   @override
   void initState() {
     super.initState();
-    runFaceDetection();
   }
 
   getRealocation() async {
@@ -189,22 +187,22 @@ class _UploadFormState extends State<UploadForm> {
     );
   }
 
-  runFaceDetection() async {
-    final inputImage = InputImage.fromFile(widget.file);
-    final faceDetector = GoogleMlKit.vision.faceDetector();
-    List<Face> faces = await faceDetector.processImage(inputImage);
-    if (faces.isNotEmpty) {
-      setState(() {
-        foundFace = true;
-        print('--------------found face true-------------');
-      });
-    } else {
-      setState(() {
-        print('--------------found face false-------------');
-        foundFace = false;
-      });
-    }
-  }
+  // runFaceDetection() async {
+  //   final inputImage = InputImage.fromFile(widget.file);
+  //   final faceDetector = GoogleMlKit.vision.faceDetector();
+  //   List<Face> faces = await faceDetector.processImage(inputImage);
+  //   if (faces.isNotEmpty) {
+  //     setState(() {
+  //       foundFace = true;
+  //       print('--------------found face true-------------');
+  //     });
+  //   } else {
+  //     setState(() {
+  //       print('--------------found face false-------------');
+  //       foundFace = false;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

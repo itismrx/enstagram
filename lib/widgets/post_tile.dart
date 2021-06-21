@@ -1,15 +1,21 @@
+import 'dart:async';
+
+import 'package:animator/animator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:enstagram/models/post.dart';
-import 'package:enstagram/models/user.dart';
-import 'package:enstagram/pages/home.dart';
-import 'package:enstagram/widgets/progress.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter/material.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'package:flutter/material.dart';
+
+import '../models/post.dart';
+import '../models/user.dart';
+import '../pages/home.dart';
+import './custom_image.dart';
+import '../widgets/progress.dart';
 
 class PostTile extends StatefulWidget {
   Post post;
   PostTile(this.post);
+
   @override
   _PostTileState createState() => _PostTileState();
 }
@@ -17,16 +23,19 @@ class PostTile extends StatefulWidget {
 class _PostTileState extends State<PostTile> {
   String ownerProfilePic =
       "https://firebasestorage.googleapis.com/v0/b/enstagram-aecbc.appspot.com/o/icons8-avatar-96.png?alt=media&token=2db81f24-6169-4335-8671-3254a677a996";
-
+  bool isLiked = true;
+  int likeCount = 0;
+  bool showHeart = false;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     usersRef.doc(widget.post.ownerId).get().then((snapshot) {
       if (snapshot.exists) {
         setState(() {
           ownerProfilePic = User.fromDocument(snapshot).photUrl;
+          isLiked = widget.post.isLiked();
+          likeCount = widget.post.getLikes();
         });
       }
     }, onError: (e) {
@@ -53,6 +62,15 @@ class _PostTileState extends State<PostTile> {
         return '${days}d';
       }
     }
+  }
+
+  like() {
+    widget.post.like().then((value) {
+      setState(() {
+        isLiked = !isLiked;
+        likeCount = widget.post.getLikes();
+      });
+    });
   }
 
   @override
@@ -117,20 +135,11 @@ class _PostTileState extends State<PostTile> {
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(7),
-              child: CachedNetworkImage(
-                width: 480,
-                // height: 360,
-                fit: BoxFit.fitWidth,
-                placeholder: (context, url) => SleekCircularSlider(
-                  appearance: CircularSliderAppearance(
-                      customWidths: CustomSliderWidths(progressBarWidth: 10)),
-                  min: 10,
-                  max: 28,
-                  initialValue: 14,
-                ),
-                imageUrl: widget.post.mediaUrl,
+            child: GestureDetector(
+              onDoubleTap: like,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(7),
+                child: cachedNetworkImage(widget.post.mediaUrl),
               ),
             ),
           ),
@@ -139,18 +148,17 @@ class _PostTileState extends State<PostTile> {
             children: [
               Row(
                 children: [
-                  widget.post.likes.length == 0
-                      ? Container()
-                      : Text('${widget.post.likes.length}'),
+                  likeCount == 0 ? Container() : Text('$likeCount'),
                   SizedBox(
                     width: 2,
                   ),
                   IconButton(
-                      icon: Icon(
-                        Icons.favorite_border_outlined,
-                        color: Colors.red,
-                      ),
-                      onPressed: () => print('like')),
+                    icon: Icon(
+                      isLiked ? Icons.favorite : Icons.favorite_border_outlined,
+                      color: Colors.red,
+                    ),
+                    onPressed: like,
+                  ),
                 ],
               ),
               IconButton(
