@@ -245,7 +245,8 @@ class _ProfileState extends State<Profile> {
     } else if (_posts.isNotEmpty) {
       List<PostTile> postTiles = [];
       _posts.forEach((post) {
-        postTiles.add(PostTile(post));
+        postTiles.add(
+            PostTile(post: post, isFullSized: false, commentAction: () {}));
       });
 
       return ListView.builder(

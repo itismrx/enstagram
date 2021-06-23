@@ -1,20 +1,24 @@
-import 'dart:async';
-
-import 'package:animator/animator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:intl/intl.dart';
-import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'package:enstagram/models/activity_feed.dart';
+import 'package:enstagram/models/comment.dart';
+import 'package:enstagram/pages/post_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../models/post.dart';
 import '../models/user.dart';
 import '../pages/home.dart';
 import './custom_image.dart';
-import '../widgets/progress.dart';
+import '../services/helper_function.dart';
 
 class PostTile extends StatefulWidget {
   Post post;
-  PostTile(this.post);
+  bool isFullSized;
+  Function commentAction = () {};
+  PostTile({
+    required this.post,
+    required this.isFullSized,
+    required this.commentAction,
+  });
 
   @override
   _PostTileState createState() => _PostTileState();
@@ -25,7 +29,9 @@ class _PostTileState extends State<PostTile> {
       "https://firebasestorage.googleapis.com/v0/b/enstagram-aecbc.appspot.com/o/icons8-avatar-96.png?alt=media&token=2db81f24-6169-4335-8671-3254a677a996";
   bool isLiked = true;
   int likeCount = 0;
+  int commentCount = 0;
   bool showHeart = false;
+  User postOwnerUser = User.createDefault();
   @override
   void initState() {
     super.initState();
@@ -33,7 +39,8 @@ class _PostTileState extends State<PostTile> {
     usersRef.doc(widget.post.ownerId).get().then((snapshot) {
       if (snapshot.exists) {
         setState(() {
-          ownerProfilePic = User.fromDocument(snapshot).photUrl;
+          postOwnerUser = User.fromDocument(snapshot);
+          ownerProfilePic = postOwnerUser.photUrl;
           isLiked = widget.post.isLiked();
           likeCount = widget.post.getLikes();
         });
@@ -43,25 +50,19 @@ class _PostTileState extends State<PostTile> {
           .showSnackBar(SnackBar(content: Text('Network Error')));
       Navigator.pop(context);
     });
+    getCommentCount();
   }
 
-  static String calculateTimeDifferenceBetween(
-      DateTime startDate, DateTime endDate) {
-    int seconds = endDate.difference(startDate).inSeconds;
-    if (seconds < 60)
-      return '${seconds}s';
-    else if (seconds >= 60 && seconds < 3600)
-      return '${startDate.difference(endDate).inMinutes.abs()}m';
-    else if (seconds >= 3600 && seconds < 86400)
-      return '${startDate.difference(endDate).inHours.abs()}h';
-    else {
-      int days = startDate.difference(endDate).inDays.abs();
-      if (days > 7) {
-        return '${DateFormat('MMMd').format(startDate)}';
-      } else {
-        return '${days}d';
-      }
-    }
+  void getCommentCount() {
+    Comment.getCommentRef()
+        .doc(widget.post.postId)
+        .collection('comments')
+        .get()
+        .then((snapshot) {
+      setState(() {
+        commentCount = snapshot.docs.length;
+      });
+    });
   }
 
   like() {
@@ -70,7 +71,23 @@ class _PostTileState extends State<PostTile> {
         isLiked = !isLiked;
         likeCount = widget.post.getLikes();
       });
+      isLiked
+          ? ActivityFeed.addLikeToActivityFeed(widget.post, timestamp)
+          : ActivityFeed.removeLikeFromActivity(widget.post);
     });
+  }
+
+  comment() {
+    if (widget.isFullSized) {
+      widget.commentAction();
+    } else {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return PostScreen(
+          widget.post,
+          postOwnerUser,
+        );
+      }));
+    }
   }
 
   @override
@@ -137,6 +154,7 @@ class _PostTileState extends State<PostTile> {
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: GestureDetector(
               onDoubleTap: like,
+              onTap: comment,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(7),
                 child: cachedNetworkImage(widget.post.mediaUrl),
@@ -161,12 +179,25 @@ class _PostTileState extends State<PostTile> {
                   ),
                 ],
               ),
-              IconButton(
-                  icon: Icon(
-                    Icons.message,
-                    color: Colors.blue,
+              Row(
+                children: [
+                  commentCount == 0
+                      ? Container(
+                          width: 2,
+                        )
+                      : Text('$commentCount'),
+                  SizedBox(
+                    width: 2,
                   ),
-                  onPressed: () => print('comment')),
+                  IconButton(
+                    icon: Icon(
+                      Icons.message,
+                      color: Colors.blue,
+                    ),
+                    onPressed: comment,
+                  ),
+                ],
+              ),
             ],
           ),
           Container(

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enstagram/models/user.dart';
-import 'package:enstagram/pages/activity_feed.dart';
+import 'package:enstagram/pages/activity_feed_screen.dart';
 import 'package:enstagram/pages/create_account.dart';
 import 'package:enstagram/pages/profile.dart';
 import 'package:enstagram/pages/search.dart';
@@ -129,7 +129,7 @@ class _HomeState extends State<Home> {
       body: PageView(
         children: [
           Timeline(),
-          ActivityFeed(),
+          ActivityFeedScreen(),
           Upload(
             currentUser: currentUser,
           ),

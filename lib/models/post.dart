@@ -24,6 +24,17 @@ class Post {
     return FirebaseFirestore.instance.collection('post');
   }
 
+  static getPostById(postId, ownerId) async {
+    await Post.getPostRef()
+        .doc(ownerId)
+        .collection('userPosts')
+        .doc(postId)
+        .get()
+        .then((doc) {
+      Post.fromDocument(doc);
+    });
+  }
+
   factory Post.fromDocument(DocumentSnapshot doc) {
     Timestamp time = doc['timestamp'];
 
