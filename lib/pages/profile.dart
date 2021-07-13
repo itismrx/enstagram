@@ -8,7 +8,6 @@ import 'package:enstagram/widgets/post_tile.dart';
 import 'package:enstagram/widgets/progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 class Profile extends StatefulWidget {
   final String profileId;
@@ -33,7 +32,7 @@ class _ProfileState extends State<Profile> {
     setState(() {
       isLoading = true;
     });
-    final posts = await Post.getUserPosts(currentUser.id);
+    final posts = await Post.getUserPosts(widget.profileId);
     setState(() {
       _posts = posts;
       isLoading = false;

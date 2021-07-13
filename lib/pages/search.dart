@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enstagram/models/user.dart';
 import 'package:enstagram/pages/home.dart';
+import 'package:enstagram/pages/profile.dart';
 import 'package:enstagram/widgets/progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -73,16 +74,6 @@ class _SearchState extends State<Search> {
             if (!snapshot.data!.docs.isEmpty) {
               List<UserTile> listText = [];
               snapshot.data!.docs.forEach((doc) {
-                listText.add(
-                  UserTile(
-                    user: User.fromDocument(doc),
-                  ),
-                );
-                listText.add(
-                  UserTile(
-                    user: User.fromDocument(doc),
-                  ),
-                );
                 listText.add(
                   UserTile(
                     user: User.fromDocument(doc),
@@ -173,7 +164,14 @@ class UserTile extends StatelessWidget {
     String displayName = user.displayName;
     return InkWell(
       splashColor: Theme.of(context).accentColor,
-      onTap: () => print(user.username),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return Profile(profileId: user.id);
+          },
+        ),
+      ),
       child: Container(
         child: Column(
           children: [
